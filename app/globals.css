@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Anomail Design-Tokens.
+ *
+ * Hell ist der Ausgangszustand. Dunkel ist auf zwei Wegen erreichbar:
+ *  1. Systemeinstellung (prefers-color-scheme) - greift auch ohne JavaScript.
+ *  2. Manueller Umschalter - setzt .light oder .dark auf <html> und gewinnt
+ *     dadurch gegen die Systemeinstellung.
+ */
+@layer base {
+  :root {
+    --background: 38 42% 76%;
+    --foreground: 0 0% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 12%;
+
+    /* Abgedunkelt von 54% auf 46%: als Schriftfarbe auf dem Hintergrund
+       erreichte 54% nur 3,65:1 und lag damit unter 4,5:1. */
+    --primary: 229 69% 46%;
+    --primary-foreground: 0 0% 100%;
+    /* Abgeleitete Zustandsstufen: hell wird beim Hovern dunkler. */
+    --primary-hover: 229 69% 38%;
+    --primary-active: 229 69% 31%;
+
+    --secondary: 38 38% 88%;
+    --secondary-foreground: 0 0% 12%;
+
+    --muted: 38 32% 90%;
+    --muted-foreground: 0 0% 32%;
+
+    /* Nur fuer Flaechen, Rahmen und Trenner. Niemals als Schriftfarbe. */
+    --accent: 43 45% 58%;
+    --accent-foreground: 0 0% 12%;
+
+    /* Abgedunkelt von 45% auf 37%: als Schriftfarbe auf dem Hintergrund
+       erreichte 45% nur 3,58:1. */
+    --destructive: 0 72% 37%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-hover: 0 72% 30%;
+    --destructive-active: 0 72% 24%;
+
+    /* --border traegt dekorative Trenner, --input die Grenzen von
+       Bedienelementen. Nur --input muss 3:1 erreichen. */
+    --border: 38 28% 72%;
+    --input: 38 28% 38%;
+
+    --ring: 229 69% 46%;
+
+    --radius: 0.75rem;
+
+    /* Der einzige Schatten im gesamten System. */
+    --shadow-card: 0 2px 8px hsl(38 30% 18% / 0.1);
+  }
+
+  .dark {
+    --background: 38 12% 10%;
+    --foreground: 38 15% 94%;
+
+    --card: 38 10% 14%;
+    --card-foreground: 38 15% 94%;
+
+    --primary: 229 78% 76%;
+    --primary-foreground: 229 60% 12%;
+    /* Dunkel wird beim Hovern heller, damit der Kontrast weiter steigt. */
+    --primary-hover: 229 78% 80%;
+    --primary-active: 229 78% 86%;
+
+    --secondary: 38 10% 20%;
+    --secondary-foreground: 38 15% 94%;
+
+    --muted: 38 10% 18%;
+    --muted-foreground: 38 12% 72%;
+
+    --accent: 43 40% 52%;
+    --accent-foreground: 0 0% 12%;
+
+    /* 70% ergab als Schrift auf --secondary nur 4,43:1. 71% hebt das auf
+       4,59:1 und laesst alle uebrigen Kombinationen unberuehrt. */
+    --destructive: 0 76% 71%;
+    --destructive-foreground: 0 0% 12%;
+    --destructive-hover: 0 76% 78%;
+    --destructive-active: 0 76% 84%;
+
+    --border: 38 10% 26%;
+    --input: 38 12% 46%;
+
+    --ring: 229 78% 76%;
+
+    --shadow-card: 0 2px 8px hsl(0 0% 0% / 0.4);
+  }
+
+  /* Fallback ohne JavaScript: Systemeinstellung greift, solange der Nutzer
+     nicht ausdruecklich hell gewaehlt hat. */
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+      --background: 38 12% 10%;
+      --foreground: 38 15% 94%;
+
+      --card: 38 10% 14%;
+      --card-foreground: 38 15% 94%;
+
+      --primary: 229 78% 76%;
+      --primary-foreground: 229 60% 12%;
+
+      --secondary: 38 10% 20%;
+      --secondary-foreground: 38 15% 94%;
+
+      --muted: 38 10% 18%;
+      --muted-foreground: 38 12% 72%;
+
+      --accent: 43 40% 52%;
+      --accent-foreground: 0 0% 12%;
+
+      /* 70% ergab als Schrift auf --secondary nur 4,43:1. 71% hebt das auf
+       4,59:1 und laesst alle uebrigen Kombinationen unberuehrt. */
+    --destructive: 0 76% 71%;
+      --destructive-foreground: 0 0% 12%;
+
+      --border: 38 10% 26%;
+      --input: 38 12% 46%;
+
+      --ring: 229 78% 76%;
+
+      --shadow-card: 0 2px 8px hsl(0 0% 0% / 0.4);
+    }
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-jakarta), system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.625rem;
+    -webkit-font-smoothing: antialiased;
+    /*
+     * Deutsche Komposita sind lang. "Benachrichtigungen" in Ueberschriftsgroesse
+     * passt auf 320px in keine Zeile, und ohne Trennung schiebt ein einziges
+     * Wort die ganze Seite waagerecht auf - WCAG 1.4.10 verlangt das Gegenteil.
+     *
+     * hyphens: auto trennt an sprachlich richtigen Stellen; das setzt lang="de"
+     * am <html> voraus, das gesetzt ist. overflow-wrap greift dort, wo der
+     * Browser keine Trennstelle kennt - dann bricht das Wort hart, was
+     * immer noch besser ist als ein Querlauf.
+     */
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+}
+
+@layer components {
+  /*
+   * Einheitlicher Fokusring fuer jedes bedienbare Element.
+   * outline statt box-shadow, damit der Ring auf jeder Flaeche sichtbar
+   * bleibt und nicht von der darunterliegenden Farbe abhaengt.
+   */
+  .focus-ring {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .focus-ring:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Mindest-Trefferflaeche fuer alles Bedienbare. */
+  .hit-area {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

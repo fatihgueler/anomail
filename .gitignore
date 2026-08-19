@@ -1,0 +1,22 @@
+node_modules/
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+.env
+.env.local
+.DS_Store
+db/.drizzle/
+
+# Lokale Entwicklungsdatenbank. Ein vollstaendiges PostgreSQL-Datenverzeichnis,
+# angelegt von scripts/local-dev-db.mts. Gehoert nicht ins Repository - es ist
+# gross, binaer und rechnerabhaengig.
+.local-dev-pg/
+
+# Ergebnisse der Browser-Pruefungen: Aufnahmen, Bildschirmfotos, Berichte.
+# Entstehen bei jedem Lauf neu.
+test-results/
+playwright-report/
+blob-report/
+.playwright/

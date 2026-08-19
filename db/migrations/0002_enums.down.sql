@@ -1,0 +1,9 @@
+DROP TYPE IF EXISTS moderation_status;
+DROP TYPE IF EXISTS risk_level;
+DROP TYPE IF EXISTS notification_type;
+DROP TYPE IF EXISTS report_status;
+DROP TYPE IF EXISTS report_reason;
+DROP TYPE IF EXISTS target_type;
+DROP TYPE IF EXISTS conversation_status;
+DROP TYPE IF EXISTS letter_status;
+DROP TYPE IF EXISTS user_role;

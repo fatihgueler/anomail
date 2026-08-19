@@ -1,0 +1,85 @@
+name: Pruefung
+
+# Jeder Push und jeder Pull Request. Eine Pruefung, die nur vor der
+# Veroeffentlichung laeuft, findet Verstoesse erst, wenn sie teuer sind.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  statisch:
+    name: Typen, Tokens, Sprache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typen
+        run: npm run typecheck
+
+      # Kontrastrechnung, Verbot hartkodierter Farben, Landmarken und
+      # Sprachregeln. Alles ohne Browser, deshalb als eigener, schneller Job.
+      - name: Barrierefreiheit, statisch
+        run: npm run test:a11y
+
+  datenbank:
+    name: Datenbank und RLS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Startet eine echte PostgreSQL-Instanz. RLS und
+      # "FOR UPDATE SKIP LOCKED" lassen sich nicht nachbilden.
+      - name: Datenbanktests
+        run: npm run test:db
+
+  axe:
+    name: axe-core ueber alle Routen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Browser laden
+        run: npx playwright install --with-deps chromium
+
+      # Legt die Datenbank an, schreibt .env.local und bleibt im Vordergrund.
+      # Der Postgres-Prozess ist ein Kind dieses Aufrufs.
+      - name: Datenbank starten
+        run: |
+          npx tsx scripts/local-dev-db.mts &
+          npx tsx scripts/warte-auf-db.mts
+
+      # Der Lauf baut die Anwendung selbst und startet sie
+      # (webServer in playwright.config.ts).
+      - name: axe-core, beide Farbmodi
+        run: npm run test:axe
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-befunde
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 14
