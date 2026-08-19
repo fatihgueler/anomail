@@ -19,6 +19,10 @@ test("die Zielmessung meldet ein zu kleines Ziel auch wirklich", async ({
   // Gegenbeweis koennte sie unbemerkt alles durchwinken und jede folgende
   // Pruefung bestuende aus dem falschen Grund.
   await page.goto("/");
+  // Erst nach der Hydrierung einfuegen. React gleicht den Baum sonst noch
+  // einmal ab und raeumt das eingefuegte Element weg, bevor gemessen wird -
+  // der Test bestuende dann, weil er nichts findet, statt weil nichts da ist.
+  await page.waitForLoadState("networkidle");
 
   await page.evaluate(() => {
     const knopf = document.createElement("button");
