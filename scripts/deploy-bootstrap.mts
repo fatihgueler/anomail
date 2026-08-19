@@ -10,9 +10,13 @@
  *      im Repository.
  *   3. Die Kategorien anlegen, falls sie fehlen.
  *
- * Was hier NICHT passiert: Beispieldaten. db/seed.ts leert vorher alle
- * Tabellen; auf einer laufenden Instanz waere das ein Datenverlust bei jedem
- * Ausrollen. Fuer eine Vorfuehrinstanz gibt es scripts/demo-daten.mts.
+ * Was hier NICHT passiert: db/seed.ts. Der leert vorher alle Tabellen; auf
+ * einer laufenden Instanz waere das ein Datenverlust bei jedem Ausrollen.
+ *
+ * Steht DEMO_DATEN auf "true", kommt ein vierter Schritt dazu und legt
+ * wartende Briefe fuer eine Vorfuehrinstanz an - der loescht nichts. Auf
+ * Railway ist das der einzige Weg dorthin, ohne die Datenbank oeffentlich
+ * erreichbar zu machen.
  *
  * Das Skript ist mehrfach ausfuehrbar: nichts darin haengt davon ab, dass es
  * das erste Mal laeuft.
@@ -80,6 +84,15 @@ try {
       ? "     Alle vorhanden."
       : `     ${rowCount} angelegt.`,
   );
+
+  if (process.env.DEMO_DATEN === "true") {
+    console.log("4/4  Vorfuehrdaten (DEMO_DATEN=true)");
+    const { legeDemoDatenAn } = await import("./demo-daten.mts");
+    const angelegt = await legeDemoDatenAn(client);
+    console.log(
+      angelegt === 0 ? "     Waren schon da." : `     ${angelegt} Briefe angelegt.`,
+    );
+  }
 
   console.log("\nDatenbank ist betriebsbereit.");
 } finally {

@@ -11,16 +11,14 @@
  * Die Texte sind bewusst unauffaellige Platzhalter. Erfundene Krisen-
  * schilderungen haetten in einem Vorfuehrdatensatz nichts zu suchen.
  *
- * Aufruf:  npx tsx scripts/demo-daten.mts
+ * Zwei Wege hinein:
+ *   - direkt:  npx tsx scripts/demo-daten.mts
+ *   - beim Ausrollen: DEMO_DATEN=true, dann ruft deploy-bootstrap.mts die
+ *     Funktion mit auf. Auf Railway ist das der einzige Weg, ohne die
+ *     Datenbank oeffentlich erreichbar zu machen.
  */
 import { Client } from "pg";
-
-const DATENBANK_URL = process.env.DATABASE_URL;
-
-if (!DATENBANK_URL) {
-  console.error("DATABASE_URL fehlt.");
-  process.exit(1);
-}
+import { pathToFileURL } from "node:url";
 
 /**
  * Feste Kennung, damit ein zweiter Lauf denselben Autor wiedererkennt.
@@ -56,10 +54,21 @@ const BRIEFE = [
   },
 ];
 
-const client = new Client({ connectionString: DATENBANK_URL });
-await client.connect();
+/**
+ * Macht aus einer Marke wie "demo-1" eine feste UUID.
+ *
+ * submission_id ist vom Typ uuid. Eine gerechnete, immer gleiche UUID haelt
+ * den Lauf wiederholbar, ohne dass eine Zuordnungstabelle noetig waere.
+ */
+function markeAlsUuid(marke: string): string {
+  const ziffern = marke.replace(/\D/g, "").padStart(2, "0").slice(0, 2);
+  return `de70de70-0000-4000-8000-0000000000${ziffern}`;
+}
 
-try {
+/** Gibt zurueck, wie viele Briefe neu entstanden sind. */
+export async function legeDemoDatenAn(
+  client: Pick<Client, "query">,
+): Promise<number> {
   const { rows: autoren } = await client.query<{ id: string }>(
     `INSERT INTO users (email, anomail_id)
      VALUES ($1, $2)
@@ -71,8 +80,8 @@ try {
   const autorId = autoren[0].id;
   let angelegt = 0;
 
-  for (const brief of BRIEFE) {
-    // Die Marke steht unsichtbar in submission_id: sie ist bereits eindeutig
+  for (const [index, brief] of BRIEFE.entries()) {
+    // Die Marke steht in submission_id: die Spalte ist bereits eindeutig
     // gedacht und erspart eine eigene Spalte nur fuer die Vorfuehrung.
     const { rows } = await client.query<{ id: string }>(
       `INSERT INTO letters (author_id, content, status, submission_id, created_at)
@@ -81,12 +90,7 @@ try {
          SELECT 1 FROM letters WHERE submission_id = $3::uuid
        )
        RETURNING id`,
-      [
-        autorId,
-        brief.text,
-        markeAlsUuid(brief.marke),
-        String(BRIEFE.indexOf(brief) + 1),
-      ],
+      [autorId, brief.text, markeAlsUuid(brief.marke), String(index + 1)],
     );
 
     if (rows.length === 0) {
@@ -102,22 +106,37 @@ try {
     );
   }
 
-  console.log(
-    angelegt === 0
-      ? "Die Vorfuehrbriefe waren schon da. Nichts geaendert."
-      : `${angelegt} Vorfuehrbriefe angelegt.`,
-  );
-} finally {
-  await client.end();
+  return angelegt;
 }
 
-/**
- * Macht aus einer Marke wie "demo-1" eine feste UUID.
- *
- * submission_id ist vom Typ uuid. Eine gerechnete, immer gleiche UUID haelt
- * den Lauf wiederholbar, ohne dass eine Zuordnungstabelle noetig waere.
- */
-function markeAlsUuid(marke: string): string {
-  const ziffern = marke.replace(/\D/g, "").padStart(2, "0").slice(0, 2);
-  return `de70de70-0000-4000-8000-0000000000${ziffern}`;
+async function main(): Promise<void> {
+  const url = process.env.DATABASE_URL;
+
+  if (!url) {
+    console.error("DATABASE_URL fehlt.");
+    process.exit(1);
+  }
+
+  const client = new Client({ connectionString: url });
+  await client.connect();
+
+  try {
+    const angelegt = await legeDemoDatenAn(client);
+
+    console.log(
+      angelegt === 0
+        ? "Die Vorfuehrbriefe waren schon da. Nichts geaendert."
+        : `${angelegt} Vorfuehrbriefe angelegt.`,
+    );
+  } finally {
+    await client.end();
+  }
+}
+
+// Nur bei direktem Aufruf ausfuehren, nicht beim Import aus dem Bootstrap.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 }
