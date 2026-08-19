@@ -47,6 +47,106 @@ export class ConsoleMailer implements Mailer {
   }
 }
 
+function requireEnv(name: string): string {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(
+      `${name} fehlt. MAIL_TRANSPORT="smtp" braucht Host, Port, Benutzer und Passwort.`,
+    );
+  }
+
+  return value;
+}
+
+/**
+ * Versand ueber einen SMTP-Server.
+ *
+ * Bewusst anbieterneutral: Host, Port und Zugangsdaten kommen aus der
+ * Umgebung, damit derselbe Code mit Mailgun, Brevo, Postmark, einem eigenen
+ * Server oder was auch immer laeuft. Kein Anbieter ist fest verdrahtet.
+ *
+ * Die Verbindung entsteht einmal und wird wiederverwendet; nodemailer haelt
+ * dafuer einen eigenen Pool.
+ */
+export class SmtpMailer implements Mailer {
+  readonly name = "smtp";
+
+  /**
+   * Der Transport wird erst beim ersten Versand gebaut, nicht im Konstruktor.
+   * Sonst braeuchte schon der Programmstart die Zugangsdaten, und ein Bau ohne
+   * gesetzte Umgebung schlaege fehl.
+   */
+  #transport: import("nodemailer").Transporter | undefined;
+
+  #from: string;
+
+  constructor(from: string) {
+    this.#from = from;
+  }
+
+  async #getTransport(): Promise<import("nodemailer").Transporter> {
+    if (this.#transport) {
+      return this.#transport;
+    }
+
+    const nodemailer = await import("nodemailer");
+    const port = Number.parseInt(process.env.SMTP_PORT ?? "587", 10);
+
+    if (!Number.isFinite(port)) {
+      throw new Error(`SMTP_PORT ist keine Zahl: "${process.env.SMTP_PORT}".`);
+    }
+
+    this.#transport = nodemailer.createTransport({
+      host: requireEnv("SMTP_HOST"),
+      port,
+      // Port 465 spricht von Anfang an TLS, 587 steigt per STARTTLS um.
+      // Ueberschreibbar, weil manche Anbieter davon abweichen.
+      secure: process.env.SMTP_SECURE
+        ? process.env.SMTP_SECURE === "true"
+        : port === 465,
+      auth: {
+        user: requireEnv("SMTP_USER"),
+        pass: requireEnv("SMTP_PASSWORD"),
+      },
+    });
+
+    return this.#transport;
+  }
+
+  async sendMagicLink(mail: MagicLinkMail): Promise<void> {
+    const transport = await this.#getTransport();
+
+    const gueltigBis = new Intl.DateTimeFormat("de-DE", {
+      dateStyle: "short",
+      timeStyle: "short",
+      timeZone: "Europe/Berlin",
+    }).format(mail.expiresAt);
+
+    // Nur Text, kein HTML. Ein anonymer Dienst hat keinen Grund, in einer Mail
+    // nachzuladende Bilder oder Zaehlpixel unterzubringen.
+    const text = [
+      "Du hast dich bei Anomail angemeldet.",
+      "",
+      "Mit diesem Link kommst du hinein:",
+      mail.url,
+      "",
+      `Der Link gilt bis ${gueltigBis} Uhr und funktioniert einmal.`,
+      "",
+      "Hast du das nicht angefordert, ignoriere diese Mail. Dann passiert nichts.",
+      "",
+      "Anomail ist kein Krisendienst. In einer Notlage: Telefonseelsorge 0800 111 0 111, im Notfall 112.",
+    ].join("\n");
+
+    await transport.sendMail({
+      to: mail.to,
+      from: this.#from,
+      subject: "Dein Anmeldelink für Anomail",
+      text,
+    });
+  }
+}
+
 let mailer: Mailer | undefined;
 
 /**
@@ -74,8 +174,15 @@ export function createMailer(): Mailer {
     return mailer;
   }
 
+  if (transport === "smtp") {
+    mailer = new SmtpMailer(
+      process.env.AUTH_EMAIL_FROM ?? "anmeldung@anomail.local",
+    );
+    return mailer;
+  }
+
   throw new Error(
-    `Unbekannter MAIL_TRANSPORT "${transport}". Bekannt ist derzeit nur "console".`,
+    `Unbekannter MAIL_TRANSPORT "${transport}". Bekannt sind "console" und "smtp".`,
   );
 }
 

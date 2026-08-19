@@ -2,6 +2,9 @@
   "name": "anomail",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,6 +18,9 @@
     "test:db": "vitest run tests/db",
     "test:a11y": "vitest run tests/a11y",
     "test:axe": "playwright test",
+    "deploy:bootstrap": "tsx scripts/deploy-bootstrap.mts",
+    "demo:daten": "tsx scripts/demo-daten.mts",
+    "cron:release-leases": "tsx scripts/cron-release-leases.mts",
     "dev:db": "tsx scripts/local-dev-db.mts",
     "icons": "tsx scripts/generate-icons.mts"
   },
@@ -30,6 +36,7 @@
     "lucide-react": "^0.469.0",
     "next": "^15.1.6",
     "next-auth": "^5.0.0-beta.32",
+    "nodemailer": "^8.0.11",
     "pg": "^8.23.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -40,6 +47,7 @@
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.62.1",
     "@types/node": "^22.10.0",
+    "@types/nodemailer": "^8.0.1",
     "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
