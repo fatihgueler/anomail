@@ -1,8 +1,24 @@
 # Auf Railway ausrollen
 
-Anleitung für eine Vorführinstanz, die ein Kunde ansehen kann. Alles, was ohne
-deine Zugangsdaten machbar war, ist bereits im Repository — offen bleiben die
-Werte, die nur du hast. Sie sind unten als `EINTRAGEN` markiert.
+## Stand: die Instanz läuft bereits
+
+| | |
+| --- | --- |
+| Adresse | https://anomail-production.up.railway.app |
+| Railway-Projekt | `anomail` |
+| Dienste | `anomail` (Web, aus GitHub `main`), `Postgres` |
+| Datenbank | Schema, Rollenpasswort, Kategorien und vier Vorführbriefe sind angelegt |
+
+**Es fehlt genau eine Sache, und ohne sie kommt niemand über die Startseite
+hinaus: die SMTP-Zugangsdaten.** Sie stehen als `BITTE-EINTRAGEN` in den
+Variablen. Ohne sie wird kein Anmeldelink verschickt. Siehe Schritt 2,
+Abschnitt „Mailversand".
+
+Alles Übrige — `AUTH_SECRET`, `APP_DB_PASSWORD`, `CRON_SECRET`, `AUTH_URL`,
+die Datenbankverbindungen — ist erzeugt und gesetzt.
+
+Diese Anleitung beschreibt den Weg vollständig, damit er sich wiederholen
+lässt, etwa für eine zweite Umgebung.
 
 ---
 
@@ -118,13 +134,25 @@ ohne Schema wäre schlimmer als keine.
 
 ## Schritt 4 — Vorführdaten
 
-Einmalig, damit `/listen` etwas anzuzeigen hat:
+Damit `/listen` etwas anzuzeigen hat, die Variable setzen:
 
-```bash
-railway run --service <webdienst> npm run demo:daten
+```
+DEMO_DATEN=true
 ```
 
-Legt vier wartende Briefe an. Ein zweiter Aufruf ändert nichts.
+Der Release-Schritt legt daraufhin vier wartende Briefe an. Ein zweiter Lauf
+ändert nichts, und gelöscht wird nie etwas.
+
+> Der naheliegende Weg `railway run npm run demo:daten` funktioniert **nicht**.
+> `railway run` führt den Befehl auf deinem Rechner aus, `DATABASE_URL` zeigt
+> aber auf `postgres.railway.internal` — erreichbar nur aus dem Projektnetz.
+> Die Datenbank dafür öffentlich zu machen wäre der falsche Preis.
+
+Lokal, gegen die Entwicklungsdatenbank, geht der direkte Aufruf weiterhin:
+
+```bash
+npm run demo:daten
+```
 
 ---
 
@@ -179,10 +207,16 @@ Vorführinstanz sichtbar. Für eine reine Ansicht ist das in Ordnung, für einen
 abmahnfähig. Übersicht unter `/dev/legal` (nur in der Entwicklung).
 
 **2. Keine seitenübergreifende Navigation.** Siehe `docs/AP10-abnahme.md`,
-Abschnitt 6. Der Kunde muss Adressen von Hand eingeben oder den Zurück-Knopf
-benutzen, um zwischen `/write`, `/listen` und `/my-letters` zu wechseln. Für
-eine Vorführung ist das der auffälligste Mangel — nenne die drei Adressen am
-besten gleich mit.
+Abschnitt 6. Die Startseite führt inzwischen in alle Bereiche, aber von einer
+Unterseite aus gibt es weiterhin keinen Weg zu einer anderen — nur zurück zur
+Startseite oder über den Zurück-Knopf. Für eine Vorführung reicht das, wenn der
+Kunde weiß, dass er über `/` navigiert. Eine Kopfleiste, die auf jeder Seite
+steht, fehlt weiterhin.
+
+**2b. Der Cron-Dienst ist nicht angelegt.** Schritt 5 ist offen. Ohne ihn bleibt
+ein Brief blockiert, wenn jemand `/listen` öffnet und ohne Antwort weggeht. Bei
+vier Vorführbriefen und wenigen Betrachtern fällt das kaum auf; für einen
+längeren Betrieb muss der Dienst eingerichtet werden.
 
 **3. Backups.** Railways Postgres läuft ohne automatische Sicherung, solange du
 keine einrichtest. Für eine Vorführung mit Testdaten unerheblich.
