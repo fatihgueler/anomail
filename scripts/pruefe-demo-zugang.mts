@@ -18,6 +18,20 @@ if (!basis || !token) {
   process.exit(1);
 }
 
+/**
+ * Auth.js benennt das Sitzungscookie je nach Protokoll unterschiedlich.
+ *
+ * Ueber HTTPS bekommt es das Praefix "__Secure-", das der Browser nur fuer
+ * sichere Verbindungen zulaesst. Wer lokal entwickelt und den Namen von dort
+ * uebernimmt, wundert sich auf der ausgerollten Instanz ueber eine
+ * Weiterleitung zur Anmeldung - genau das ist hier passiert.
+ */
+function cookieName(basisUrl: string): string {
+  return basisUrl.startsWith("https")
+    ? "__Secure-authjs.session-token"
+    : "authjs.session-token";
+}
+
 const PRUEFUNGEN = [
   { pfad: "/my-letters", suffix: "", erwartet: "Nutzer" },
   { pfad: "/moderation/reports", suffix: "-moderation", erwartet: "Moderation" },
@@ -32,7 +46,7 @@ try {
 
     await context.addCookies([
       {
-        name: "authjs.session-token",
+        name: cookieName(basis),
         value: `${token}${pruefung.suffix}`,
         domain: new URL(basis).hostname,
         path: "/",

@@ -62,7 +62,14 @@ try {
 
       await context.addCookies([
         {
-          name: "authjs.session-token",
+          /*
+           * Ueber HTTPS traegt das Sitzungscookie von Auth.js das Praefix
+           * "__Secure-". Ohne diese Fallunterscheidung landen Aufnahmen einer
+           * ausgerollten Instanz stumm im abgemeldeten Zustand.
+           */
+          name: BASIS.startsWith("https")
+            ? "__Secure-authjs.session-token"
+            : "authjs.session-token",
           value: SITZUNG,
           domain: new URL(BASIS).hostname,
           path: "/",
