@@ -19,7 +19,12 @@ import { chromium, type Page } from "@playwright/test";
 
 const BASIS = process.env.SCREENSHOT_BASE_URL ?? "http://localhost:3000";
 const ZIEL = path.join(process.cwd(), ".screenshots");
-const SITZUNG = "local-dev-session-token";
+/**
+ * Standardmaessig die lokale Entwicklungssitzung. Fuer eine ausgerollte
+ * Instanz den Vorfuehr-Token ueber SCREENSHOT_TOKEN mitgeben - sonst zeigen
+ * die Aufnahmen still den abgemeldeten Zustand.
+ */
+const SITZUNG = process.env.SCREENSHOT_TOKEN ?? "local-dev-session-token";
 
 const ROUTEN = process.argv.slice(2).length > 0 ? process.argv.slice(2) : ["/"];
 
@@ -75,6 +80,9 @@ try {
           path: "/",
           httpOnly: true,
           sameSite: "Lax",
+          // Pflicht beim __Secure-Praefix: der Browser lehnt das Cookie sonst
+          // rundweg ab, und zwar mit einer Meldung ueber ungueltige Felder.
+          secure: BASIS.startsWith("https"),
         },
       ]);
 
