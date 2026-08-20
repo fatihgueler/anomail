@@ -5,19 +5,34 @@ import { cn } from "@/lib/utils";
 type CardProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Hebt die Karte als anklickbares Ziel hervor. */
   interactive?: boolean;
+  /** Ruhiger: ohne Schatten, nur mit Rahmen. Fuer Karten in Listen. */
+  flach?: boolean;
 };
 
 /**
- * Die Karte traegt den einzigen Schatten des Systems.
- * Kein Farbverlauf, kein zweiter Schatten, keine Glaseffekte.
+ * Ein Blatt auf dem Tisch.
+ *
+ * Kein Farbverlauf, keine Glaseffekte. Der Schatten kommt aus der warmen
+ * Papier-Skala und faellt weich - ein Blatt wirft keinen harten Rand.
  */
-export function Card({ className, interactive = false, ...props }: CardProps) {
+export function Card({
+  className,
+  interactive = false,
+  flach = false,
+  ...props
+}: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-lg border border-border bg-card text-card-foreground shadow-card",
+        "rounded-lg border border-border bg-card text-card-foreground",
+        flach ? "shadow-none" : "shadow-paper-2",
         interactive &&
-          "transition-colors duration-fast hover:border-input focus-within:border-input",
+          cn(
+            "transition-[border-color,box-shadow,transform] duration-base ease-out",
+            "hover:-translate-y-px hover:border-input hover:shadow-paper-3",
+            "focus-within:border-input focus-within:shadow-paper-3",
+            "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+          ),
         className,
       )}
       {...props}

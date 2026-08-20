@@ -15,7 +15,7 @@ export default async function ResponseSentPage() {
   await requireActiveUser("/response-sent");
 
   return (
-    <main id="hauptinhalt" className="mx-auto flex max-w-shell flex-col gap-8 p-8">
+    <main id="hauptinhalt" className="mx-auto flex w-full max-w-shell flex-col gap-8 px-4 py-16 sm:px-6">
       <div className="flex max-w-prose items-start gap-4">
         <span className="mt-1 text-primary">
           <Icon icon={MailCheck} />

@@ -52,7 +52,7 @@ export default async function LoginErrorPage({ searchParams }: ErrorPageProps) {
   const message = (error && MESSAGES[error]) || FALLBACK;
 
   return (
-    <main id="hauptinhalt" className="mx-auto flex max-w-prose flex-col gap-8 p-8">
+    <main id="hauptinhalt" className="mx-auto flex w-full max-w-narrow flex-col gap-8 px-4 py-20 sm:px-6">
       <div
         role="alert"
         className="flex flex-col items-start gap-4 rounded-lg border border-destructive bg-card p-6"

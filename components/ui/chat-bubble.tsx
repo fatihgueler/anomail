@@ -59,7 +59,8 @@ export function ChatBubble({
             Diese Nachricht wurde gelöscht.
           </p>
         ) : (
-          <div className="mt-2 text-body">{children}</div>
+          /* Serif: das hier hat ein Mensch geschrieben. */
+          <div className="brieftext mt-2 max-w-none">{children}</div>
         )}
       </div>
 

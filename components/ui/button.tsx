@@ -34,7 +34,7 @@ type DangerButtonProps = BaseButtonProps & {
 };
 
 type SafeButtonProps = BaseButtonProps & {
-  variant?: "primary" | "secondary" | "tertiary";
+  variant?: "primary" | "accent" | "secondary" | "tertiary";
   onConfirm?: never;
 };
 

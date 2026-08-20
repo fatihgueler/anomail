@@ -1,10 +1,11 @@
 "use client";
 
-import { Mail } from "lucide-react";
+import { Mail, MailCheck } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Feld } from "@/components/ui/feld";
+import { Icon } from "@/components/ui/icon";
 
 import { requestMagicLink, type LoginFormState } from "./actions";
 
@@ -21,50 +22,29 @@ export function LoginForm({ weiter }: LoginFormProps) {
     INITIAL_STATE,
   );
 
-  const fieldId = React.useId();
-  const errorId = `${fieldId}-fehler`;
-  const hintId = `${fieldId}-hinweis`;
-  const hasError = state.status === "error";
+  const hatFehler = state.status === "error";
+  const verschickt = state.status === "verschickt";
+
+  if (verschickt) {
+    return <Bestaetigung email={state.email} />;
+  }
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
       {weiter ? <input type="hidden" name="weiter" value={weiter} /> : null}
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor={fieldId} className="text-label text-foreground">
-          E-Mail-Adresse
-        </label>
-
-        <p id={hintId} className="text-small text-muted-foreground">
-          Wir schicken dir einen Anmeldelink. Ein Passwort brauchst du nicht.
-        </p>
-
-        <input
-          id={fieldId}
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          defaultValue={state.email}
-          disabled={pending}
-          aria-invalid={hasError ? true : undefined}
-          aria-describedby={hasError ? `${hintId} ${errorId}` : hintId}
-          placeholder="name@beispiel.de"
-          className={cn(
-            "focus-ring h-control w-full rounded-lg border bg-card px-4",
-            "text-body text-card-foreground placeholder:text-muted-foreground",
-            "transition-colors duration-fast",
-            hasError ? "border-destructive" : "border-input hover:border-primary",
-            "disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground",
-          )}
-        />
-
-        {hasError ? (
-          <p id={errorId} role="alert" className="text-small text-destructive">
-            {state.message}
-          </p>
-        ) : null}
-      </div>
+      <Feld
+        label="E-Mail-Adresse"
+        hinweis="Wir schicken dir einen Anmeldelink. Ein Passwort brauchst du nicht."
+        fehler={hatFehler ? state.message : undefined}
+        icon={Mail}
+        name="email"
+        type="email"
+        autoComplete="email"
+        required
+        defaultValue={state.email}
+        disabled={pending}
+      />
 
       <Button
         type="submit"
@@ -77,5 +57,52 @@ export function LoginForm({ weiter }: LoginFormProps) {
         Anmeldelink schicken
       </Button>
     </form>
+  );
+}
+
+/**
+ * Der Erfolgszustand.
+ *
+ * Er ersetzt das Formular an Ort und Stelle, statt auf eine andere Seite zu
+ * wechseln. role="status" mit aria-live sorgt dafuer, dass auch angesagt wird,
+ * was passiert ist - sonst waere fuer Screenreader-Nutzer einfach das
+ * Formular verschwunden.
+ */
+function Bestaetigung({ email }: { email?: string }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      data-reveal="sichtbar"
+      className="flex flex-col items-start gap-4"
+    >
+      <span className="text-primary">
+        <Icon icon={MailCheck} />
+      </span>
+
+      <h3 className="font-serif text-subtitle text-card-foreground">
+        Schau in dein Postfach
+      </h3>
+
+      <p className="max-w-prose text-body text-muted-foreground">
+        {email ? (
+          <>
+            Wir haben den Anmeldelink an{" "}
+            <span className="font-semibold text-card-foreground">{email}</span>{" "}
+            geschickt. Er gilt 15 Minuten und funktioniert einmal.
+          </>
+        ) : (
+          <>
+            Wir haben den Anmeldelink verschickt. Er gilt 15 Minuten und
+            funktioniert einmal.
+          </>
+        )}
+      </p>
+
+      <p className="max-w-prose text-small text-muted-foreground">
+        Nichts angekommen? Sieh im Spam-Ordner nach. Du kannst die Seite neu
+        laden und es noch einmal versuchen.
+      </p>
+    </div>
   );
 }

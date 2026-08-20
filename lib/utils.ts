@@ -19,7 +19,18 @@ const twMerge = extendTailwindMerge({
     classGroups: {
       "border-w": [{ border: ["control", "accentbar"] }],
       "font-size": [
-        { text: ["display", "title", "subtitle", "body", "small", "label"] },
+        {
+          text: [
+            "display",
+            "title",
+            "subtitle",
+            "lead",
+            "body",
+            "small",
+            "label",
+            "kennung",
+          ],
+        },
       ],
     },
   },

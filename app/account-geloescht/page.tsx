@@ -18,7 +18,7 @@ export const metadata: Metadata = {
  */
 export default function AccountDeletedPage() {
   return (
-    <main id="hauptinhalt" className="mx-auto flex max-w-shell flex-col gap-8 p-8">
+    <main id="hauptinhalt" className="mx-auto flex w-full max-w-shell flex-col gap-8 px-4 py-16 sm:px-6">
       <div className="flex max-w-prose flex-col gap-3">
         <h1 className="text-display">Dein Konto ist gelöscht</h1>
 

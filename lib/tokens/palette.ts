@@ -24,62 +24,85 @@ export type TokenName =
   | "muted-foreground"
   | "accent"
   | "accent-foreground"
+  | "accent-hover"
+  | "accent-active"
+  | "accent-soft"
   | "destructive"
   | "destructive-foreground"
   | "destructive-hover"
   | "destructive-active"
   | "border"
   | "input"
-  | "ring";
+  | "ring"
+  | "desk"
+  | "desk-foreground";
 
 export type Palette = Record<TokenName, string>;
 
 export const LIGHT_PALETTE: Palette = {
-  background: "38 42% 76%",
-  foreground: "0 0% 12%",
-  card: "0 0% 100%",
-  "card-foreground": "0 0% 12%",
-  primary: "229 69% 46%",
-  "primary-foreground": "0 0% 100%",
-  "primary-hover": "229 69% 38%",
-  "primary-active": "229 69% 31%",
-  secondary: "38 38% 88%",
-  "secondary-foreground": "0 0% 12%",
-  muted: "38 32% 90%",
-  "muted-foreground": "0 0% 32%",
-  accent: "43 45% 58%",
-  "accent-foreground": "0 0% 12%",
-  destructive: "0 72% 37%",
-  "destructive-foreground": "0 0% 100%",
-  "destructive-hover": "0 72% 30%",
-  "destructive-active": "0 72% 24%",
-  border: "38 28% 72%",
-  input: "38 28% 38%",
-  ring: "229 69% 46%",
+  background: "40 26% 96%",
+  foreground: "30 12% 14%",
+  card: "42 40% 99%",
+  "card-foreground": "30 12% 14%",
+  primary: "218 38% 30%",
+  "primary-foreground": "42 40% 99%",
+  "primary-hover": "218 40% 24%",
+  "primary-active": "218 44% 18%",
+  secondary: "38 22% 92%",
+  "secondary-foreground": "30 12% 14%",
+  muted: "38 18% 89%",
+  "muted-foreground": "30 8% 34%",
+  accent: "334 24% 40%",
+  "accent-foreground": "42 40% 99%",
+  "accent-hover": "334 26% 33%",
+  "accent-active": "334 28% 26%",
+  "accent-soft": "334 28% 92%",
+  destructive: "358 52% 40%",
+  "destructive-foreground": "42 40% 99%",
+  "destructive-hover": "358 54% 33%",
+  "destructive-active": "358 56% 26%",
+  border: "38 16% 84%",
+  input: "34 12% 44%",
+  ring: "218 38% 30%",
+  desk: "32 14% 18%",
+  "desk-foreground": "40 26% 94%",
 };
 
 export const DARK_PALETTE: Palette = {
-  background: "38 12% 10%",
-  foreground: "38 15% 94%",
-  card: "38 10% 14%",
-  "card-foreground": "38 15% 94%",
-  primary: "229 78% 76%",
-  "primary-foreground": "229 60% 12%",
-  "primary-hover": "229 78% 80%",
-  "primary-active": "229 78% 86%",
-  secondary: "38 10% 20%",
-  "secondary-foreground": "38 15% 94%",
-  muted: "38 10% 18%",
-  "muted-foreground": "38 12% 72%",
-  accent: "43 40% 52%",
-  "accent-foreground": "0 0% 12%",
-  destructive: "0 76% 71%",
-  "destructive-foreground": "0 0% 12%",
-  "destructive-hover": "0 76% 78%",
-  "destructive-active": "0 76% 84%",
-  border: "38 10% 26%",
-  input: "38 12% 46%",
-  ring: "229 78% 76%",
+  background: "218 22% 10%",
+  foreground: "40 20% 92%",
+  card: "218 18% 14%",
+  "card-foreground": "40 20% 92%",
+  primary: "214 60% 74%",
+  "primary-foreground": "218 40% 12%",
+  "primary-hover": "214 62% 80%",
+  "primary-active": "214 64% 86%",
+  secondary: "218 14% 20%",
+  "secondary-foreground": "40 20% 92%",
+  muted: "218 14% 17%",
+  "muted-foreground": "40 10% 70%",
+  accent: "334 42% 72%",
+  "accent-foreground": "334 30% 14%",
+  "accent-hover": "334 46% 78%",
+  "accent-active": "334 50% 84%",
+  "accent-soft": "334 20% 24%",
+  destructive: "358 62% 72%",
+  "destructive-foreground": "358 40% 12%",
+  "destructive-hover": "358 66% 79%",
+  "destructive-active": "358 70% 85%",
+  border: "218 12% 26%",
+  input: "218 10% 52%",
+  ring: "214 60% 74%",
+  /*
+   * Heller als der Seitenhintergrund, nicht dunkler.
+   *
+   * Im Hellen liegt das Blatt auf einem dunklen Pult. Im Dunkeln ist die
+   * Seite selbst schon Tinte - ein noch dunkleres Feld waere darin nicht mehr
+   * zu erkennen und das invertierte Abschlussfeld verschwaende. Die Metapher
+   * kippt hier bewusst: das Pult wird zur angehobenen Flaeche.
+   */
+  desk: "218 16% 17%",
+  "desk-foreground": "40 20% 92%",
 };
 
 export const PALETTES: Record<ThemeName, Palette> = {
@@ -308,29 +331,101 @@ export const CONTRAST_PAIRS: ContrastPair[] = [
     background: "muted",
     requirement: "text",
   },
+  /* --------------------------------------------------------------- */
+  /* Redesign: die zweite Tinte                                       */
+  /* --------------------------------------------------------------- */
   /*
-   * Die beiden folgenden Kombinationen sind rein zierend.
-   *
-   * Der Akzentbalken steht am Ursprungsbrief und am zitierten Inhalt - beide
-   * tragen die Bedeutung zusaetzlich im Text ("· Ursprünglicher Brief",
-   * daruebergesetzte Ueberschrift). Faellt der Balken weg, geht keine
-   * Information verloren.
-   *
-   * --border trennt Abschnitte und umrandet Karten. AP2 hat dafuer bewusst
-   * zwei Tokens getrennt: --border fuer Zierlinien, --input fuer die Grenzen
-   * von Bedienelementen. Nur --input muss 3:1 erreichen, und tut das auch
-   * (3,28:1 hell, 4,04:1 dunkel).
+   * --accent war frueher eine reine Zierfarbe und durfte nie Schrift sein.
+   * Seit dem Redesign ist es die zweite Tinte und traegt die Zuhoeren-Rolle -
+   * also gilt jetzt die volle Textanforderung statt einer Ausnahme. Das ist
+   * eine Verschaerfung, keine Lockerung: aus 1:1 wird 4,5:1.
    */
   {
-    usage: "Akzentbalken am Ursprungsbrief, neben der Beschriftung",
+    usage: "Zuhoeren-Rolle, Schrift auf Seitenhintergrund",
     foreground: "accent",
-    background: "secondary",
+    background: "background",
+    requirement: "text",
+  },
+  {
+    usage: "Zuhoeren-Rolle, Schrift auf Karte",
+    foreground: "accent",
+    background: "card",
+    requirement: "text",
+  },
+  {
+    usage: "Zuhoeren-Button, Schrift auf Flaeche",
+    foreground: "accent-foreground",
+    background: "accent",
+    requirement: "text",
+  },
+  {
+    usage: "Zuhoeren-Button beim Hovern, Schrift auf Flaeche",
+    foreground: "accent-foreground",
+    background: "accent-hover",
+    requirement: "text",
+  },
+  {
+    usage: "Zuhoeren-Button beim Druecken, Schrift auf Flaeche",
+    foreground: "accent-foreground",
+    background: "accent-active",
+    requirement: "text",
+  },
+  {
+    usage: "Schrift auf zarter Akzentflaeche",
+    foreground: "foreground",
+    background: "accent-soft",
+    requirement: "text",
+  },
+  {
+    usage: "Zweite Tinte auf zarter Akzentflaeche",
+    foreground: "accent",
+    background: "accent-soft",
+    requirement: "text",
+  },
+
+  /* --------------------------------------------------------------- */
+  /* Das Pult: invertierte Abschnitte und Fussleiste                  */
+  /* --------------------------------------------------------------- */
+  {
+    usage: "Abschluss-Aufruf und Fussleiste, Schrift auf Pultflaeche",
+    foreground: "desk-foreground",
+    background: "desk",
+    requirement: "text",
+  },
+  /*
+   * Flaeche gegen Flaeche, deshalb zierend.
+   *
+   * Der Abschluss-Aufruf ist nicht daran erkennbar, dass sich seine Flaeche
+   * abhebt, sondern an seiner Ueberschrift und seinem Text. Die Karte wird
+   * gegen den Seitenhintergrund aus demselben Grund nirgends auf 3:1 geprueft.
+   * Der Wert steht trotzdem in der Tabelle.
+   */
+  {
+    usage: "Pultflaeche gegen Seitenhintergrund",
+    foreground: "desk",
+    background: "background",
+    requirement: "decorative",
+  },
+
+  /*
+   * Rein zierend.
+   *
+   * --border trennt Abschnitte, umrandet Karten und zeichnet die Falz. AP2
+   * hat dafuer bewusst zwei Tokens getrennt: --border fuer Zierlinien,
+   * --input fuer die Grenzen von Bedienelementen. Nur --input muss 3:1
+   * erreichen. Der Wert steht trotzdem in der Tabelle, damit er nicht aus
+   * dem Blick geraet.
+   */
+  {
+    usage: "Falz und Zierlinie zwischen Abschnitten, um Karten",
+    foreground: "border",
+    background: "card",
     requirement: "decorative",
   },
   {
-    usage: "Zierlinie zwischen Abschnitten und um Karten",
-    foreground: "border",
-    background: "card",
+    usage: "Zarte Akzentflaeche gegen Seitenhintergrund",
+    foreground: "accent-soft",
+    background: "background",
     requirement: "decorative",
   },
 ];

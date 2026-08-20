@@ -14,7 +14,7 @@ import { checkAndRecord } from "@/lib/auth/rate-limit";
  */
 
 export type LoginFormState = {
-  status: "idle" | "error";
+  status: "idle" | "error" | "verschickt";
   message?: string;
   email?: string;
 };
@@ -100,9 +100,22 @@ export async function requestMagicLink(
   }
 
   try {
-    await signIn("email", { email, redirectTo, redirect: true });
+    /*
+     * redirect: false statt true.
+     *
+     * Vorher warf signIn eine Weiterleitung auf /login/check, und der Erfolg
+     * war ein Seitenwechsel. Jetzt bleibt die Seite stehen und das Formular
+     * tauscht sich gegen die Bestaetigung - der Moment, in dem etwas gelungen
+     * ist, soll nicht wie ein Fehler aussehen, bei dem einem die Seite unter
+     * den Fuessen weggezogen wird.
+     *
+     * /login/check bleibt erreichbar: Auth.js leitet dorthin, wenn die
+     * Anmeldung nicht ueber dieses Formular ausgeloest wurde.
+     */
+    await signIn("email", { email, redirectTo, redirect: false });
   } catch (error) {
-    // signIn wirft bei Erfolg eine Weiterleitung. Die muss durch.
+    // Sollte mit redirect: false nicht mehr vorkommen, aber wenn doch, muss
+    // eine Weiterleitung durch statt als Fehler zu enden.
     if (isRedirectError(error)) {
       throw error;
     }
@@ -126,7 +139,7 @@ export async function requestMagicLink(
     };
   }
 
-  return { status: "idle", email };
+  return { status: "verschickt", email };
 }
 
 /** Next.js signalisiert Weiterleitungen ueber einen geworfenen Fehler. */

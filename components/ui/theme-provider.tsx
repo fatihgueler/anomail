@@ -12,6 +12,10 @@ export const THEME_STORAGE_KEY = "anomail-theme";
  * falschen Helligkeit aufblitzt. Setzt immer genau eine Klasse auf <html>.
  */
 export const THEME_INIT_SCRIPT = `(function(){
+  // Belegt, dass JavaScript laeuft. Erst dadurch greifen die Einblend-Regeln
+  // in globals.css - ohne JavaScript bleibt der Inhalt schlicht sichtbar,
+  // statt dauerhaft auf opacity 0 zu stehen.
+  document.documentElement.classList.add("js");
   try {
     var stored = window.localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});
     var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;

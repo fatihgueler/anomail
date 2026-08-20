@@ -87,7 +87,16 @@ export function Textarea({
         aria-describedby={describedBy}
         onChange={(event) => onValueChange(event.target.value)}
         className={cn(
-          "focus-ring w-full resize-y rounded-lg border bg-card p-4 text-body text-card-foreground",
+          "focus-ring w-full resize-y rounded-lg border bg-card p-4 text-card-foreground",
+          /*
+           * Serif, nicht die Oberflaechenschrift.
+           *
+           * Hier steht, was ein Mensch geschrieben hat. In derselben Schrift
+           * wie ein Knopf gesetzt, saehe ein Brief aus wie ein Formularfeld.
+           * Die Klasse setzt zugleich Zeilenhoehe und Zeilenlaenge - deshalb
+           * kein text-body daneben.
+           */
+          "brieftext max-w-none",
           "placeholder:text-muted-foreground",
           "transition-colors duration-fast",
           error ? "border-destructive" : "border-input hover:border-primary",

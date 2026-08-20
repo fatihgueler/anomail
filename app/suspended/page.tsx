@@ -69,7 +69,7 @@ export default async function SuspendedPage() {
     : null;
 
   return (
-    <main id="hauptinhalt" className="mx-auto flex max-w-prose flex-col gap-8 p-8">
+    <main id="hauptinhalt" className="mx-auto flex w-full max-w-narrow flex-col gap-8 px-4 py-20 sm:px-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-display">Dein Konto ist gesperrt</h1>
         <p className="text-body text-muted-foreground">

@@ -6,6 +6,7 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { CategoryChipGroup } from "@/components/ui/category-chip";
+import { Faltmoment } from "@/components/ui/faltmoment";
 import { NoticeBanner } from "@/components/ui/notice-banner";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -43,6 +44,7 @@ export function WriteForm({ submissionId }: WriteFormProps) {
   const [content, setContent] = React.useState("");
   const [selected, setSelected] = React.useState<string[]>([]);
   const [crisisOpen, setCrisisOpen] = React.useState(false);
+  const [faltenLaeuft, setFaltenLaeuft] = React.useState(false);
   const submitRef = React.useRef<HTMLButtonElement>(null);
 
   const sent = state.status === "sent";
@@ -58,8 +60,10 @@ export function WriteForm({ submissionId }: WriteFormProps) {
       return;
     }
 
-    router.push("/sent");
-  }, [sent, state.showCrisisNotice, router]);
+    // Erst der Faltmoment, dann die Weiterleitung. Sie laeuft aus dessen
+    // Abschluss heraus, nicht hier.
+    setFaltenLaeuft(true);
+  }, [sent, state.showCrisisNotice]);
 
   const tooShort = content.trim().length > 0 && content.trim().length < MIN_LENGTH;
   const fehlende = MIN_LENGTH - content.trim().length;
@@ -172,6 +176,11 @@ export function WriteForm({ submissionId }: WriteFormProps) {
           }
         }}
         returnFocusRef={submitRef}
+      />
+
+      <Faltmoment
+        offen={faltenLaeuft}
+        fertig={() => router.push("/sent")}
       />
     </>
   );

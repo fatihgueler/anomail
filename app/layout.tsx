@@ -1,6 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import {
+  IBM_Plex_Mono,
+  Newsreader,
+  Plus_Jakarta_Sans,
+} from "next/font/google";
 
+import { auth } from "@/auth";
+import { Footer } from "@/components/shell/footer";
+import { Header } from "@/components/shell/header";
 import { SkipLink } from "@/components/ui/skip-link";
 import {
   THEME_INIT_SCRIPT,
@@ -10,10 +17,34 @@ import { themeColor } from "@/lib/tokens/theme-color";
 
 import "./globals.css";
 
+/*
+ * Drei Familien, und jede hat eine Aufgabe.
+ *
+ * Das weicht von der Hausregel "hoechstens zwei Familien" ab. Der Grund: die
+ * Serif traegt die Briefe, und ein Brief soll aussehen wie ein Brief und nicht
+ * wie Oberflaechentext. Die Mono traegt ausschliesslich die Anomail-ID - die
+ * einzige Identitaet, die es in diesem Produkt gibt. Deshalb kommt sie mit
+ * genau einem Schnitt und nur der lateinischen Teilmenge.
+ */
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin", "latin-ext"],
   display: "swap",
   variable: "--font-jakarta",
+});
+
+const newsreader = Newsreader({
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+  variable: "--font-newsreader",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400"],
+  variable: "--font-plex-mono",
 });
 
 export const metadata: Metadata = {
@@ -60,23 +91,43 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-export default function RootLayout({
+/**
+ * Wurzel-Layout.
+ *
+ * Der Aufruf von auth() macht jede Route dynamisch - auch die Rechtsseiten,
+ * die vorher statisch erzeugt wurden. Das ist der Preis fuer eine Kopfleiste,
+ * die weiss, ob jemand angemeldet ist. Die Alternative waere ein Abruf im
+ * Browser gewesen, der die Leiste beim Laden sichtbar umspringen liesse.
+ * Bei einem Dienst, dessen Seiten ohnehin fast alle personalisiert sind,
+ * faellt der Unterschied kaum ins Gewicht.
+ */
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+  const angemeldet = session?.user != null && !session.user.isBanned;
+
   return (
-    <html lang="de" suppressHydrationWarning className={jakarta.variable}>
+    <html
+      lang="de"
+      suppressHydrationWarning
+      className={`${jakarta.variable} ${newsreader.variable} ${plexMono.variable}`}
+    >
       <head>
         {/* Setzt die Helligkeit vor dem ersten Zeichnen, damit die Seite nie
             kurz in der falschen Farbwelt aufblitzt. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body>
+      <body className="flex min-h-screen flex-col">
         <ThemeProvider>
           {/* Erster fokussierbarer Punkt jeder Seite. */}
           <SkipLink />
-          {children}
+          <Header angemeldet={angemeldet} />
+          {/* flex-1, damit die Fussleiste auch auf kurzen Seiten unten sitzt. */}
+          <div className="flex-1">{children}</div>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

@@ -67,25 +67,44 @@ describe("Kontrast aller Token-Kombinationen", () => {
   });
 });
 
-describe("Die Akzentfarbe färbt keinen Text", () => {
-  test("text-accent kommt im Code nicht vor", async () => {
-    const treffer = await grepQuelltext(/text-accent(?!-foreground)/);
+describe("Die zarte Akzentfläche färbt keinen Text", () => {
+  /*
+   * Bis zum Redesign galt diese Regel für --accent selbst: die Farbe war ein
+   * reiner Zierton und stand im Altsystem als Schrift bei 1,54:1.
+   *
+   * Seit dem Redesign ist --accent die zweite Tinte und trägt Schrift — sie
+   * steht deshalb jetzt mit voller Textanforderung in CONTRAST_PAIRS. Die
+   * Zierrolle ist an --accent-soft übergegangen, und die Regel wandert mit.
+   * Aus einer Ausnahme wird damit eine Verschärfung, nicht eine Lockerung.
+   */
+  test("text-accent-soft kommt im Code nicht vor", async () => {
+    const treffer = await grepQuelltext(/text-accent-soft/);
     expect(treffer).toEqual([]);
   });
 
-  test("im hellen Modus wäre sie als Textfarbe auch nicht lesbar", () => {
-    // Der Beleg dafür, warum die Regel existiert: im Altsystem stand die
-    // Akzentfarbe als Schrift bei 1,54:1.
-    //
-    // Nur der helle Modus wird geprüft. Im dunklen läge der Wert über der
-    // Grenze — die Regel gilt trotzdem, sie ist eine gestalterische
-    // Festlegung und keine reine Kontrastfrage.
-    const ratio = contrastRatio(
-      PALETTES.light.accent,
-      PALETTES.light.background,
-    );
+  test("als Textfarbe wäre die zarte Fläche in beiden Modi unlesbar", () => {
+    // Der Beleg dafür, warum die Regel existiert.
+    for (const theme of THEMES) {
+      const ratio = contrastRatio(
+        PALETTES[theme]["accent-soft"],
+        PALETTES[theme].background,
+      );
 
-    expect(roundRatio(ratio)).toBeLessThan(4.5);
+      expect(roundRatio(ratio)).toBeLessThan(4.5);
+    }
+  });
+
+  test("die zweite Tinte selbst ist dagegen als Schrift lesbar", () => {
+    // Die Gegenprobe: --accent muss die Textgrenze in beiden Modi halten,
+    // sonst wäre die Rollenumkehr oben nur behauptet.
+    for (const theme of THEMES) {
+      const ratio = contrastRatio(
+        PALETTES[theme].accent,
+        PALETTES[theme].background,
+      );
+
+      expect(roundRatio(ratio)).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });
 
@@ -99,7 +118,9 @@ describe("Vollständigkeit der Prüfliste", () => {
     "primary-foreground",
     "destructive",
     "destructive-foreground",
+    "accent",
     "accent-foreground",
+    "desk-foreground",
   ];
 
   const SURFACE_TOKENS: TokenName[] = [
@@ -110,6 +131,8 @@ describe("Vollständigkeit der Prüfliste", () => {
     "primary",
     "destructive",
     "accent",
+    "accent-soft",
+    "desk",
   ];
 
   test("jede im Code verwendete Schriftfarbe steht in mindestens einem Paar", async () => {

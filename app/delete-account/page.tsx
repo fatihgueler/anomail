@@ -37,7 +37,7 @@ export default async function DeleteAccountPage() {
   const session = await requireActiveUser("/delete-account");
 
   return (
-    <main id="hauptinhalt" className="mx-auto flex max-w-shell flex-col gap-10 p-8">
+    <main id="hauptinhalt" className="mx-auto flex w-full max-w-shell flex-col gap-10 px-4 py-16 sm:px-6">
       <div className="flex max-w-prose flex-col gap-3">
         <h1 className="text-display">Konto löschen</h1>
         <p className="text-body text-muted-foreground">

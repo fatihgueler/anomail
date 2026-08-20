@@ -19,7 +19,7 @@ export const metadata: Metadata = {
  */
 export default function NotFound() {
   return (
-    <main id="hauptinhalt" className="mx-auto flex max-w-shell flex-col gap-8 p-8">
+    <main id="hauptinhalt" className="mx-auto flex w-full max-w-shell flex-col gap-8 px-4 py-16 sm:px-6">
       <h1 className="text-display">Diese Seite gibt es nicht</h1>
 
       <div className="max-w-prose">
