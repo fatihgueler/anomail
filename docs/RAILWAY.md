@@ -156,6 +156,43 @@ npm run demo:daten
 
 ---
 
+## Schritt 4b — Zugang ohne Mailversand
+
+Solange SMTP nicht eingerichtet ist, kommt über den regulären Weg niemand
+hinein. Für eine Vorführung gibt es deshalb feste Sitzungen:
+
+```
+DEMO_ZUGANG=true
+DEMO_ZUGANG_TOKEN=<mindestens 24 Zeichen, selbst gewählt>
+```
+
+Der Release-Schritt legt daraufhin zwei Konten an — einen Nutzer und eine
+Moderation — und je eine Sitzung dazu. Anmelden geschieht durch Setzen des
+Cookies; siehe unten.
+
+> **Das ist kein zweiter Anmeldeweg.** Es entsteht genau die Zeile in
+> `sessions`, die eine reguläre Anmeldung auch anlegt. Rollen- und
+> Sperrprüfung laufen unverändert bei jeder Anfrage.
+>
+> **Aber:** Wer den Wert von `DEMO_ZUGANG_TOKEN` kennt, ist ohne weitere
+> Prüfung angemeldet. Für eine Vorführinstanz mit erfundenen Daten ist das
+> vertretbar, für eine Instanz mit echten Briefen nicht.
+
+**Abschalten:** `DEMO_ZUGANG` entfernen und einmal neu ausrollen. Derselbe
+Schritt räumt die Sitzungen dann ab — es genügt, die Variable zu löschen.
+
+**Nachprüfen, ob es wirklich anmeldet:**
+
+```bash
+npx tsx scripts/pruefe-demo-zugang.mts https://anomail-production.up.railway.app <token>
+```
+
+> Das Sitzungscookie heißt über HTTPS `__Secure-authjs.session-token`, lokal
+> dagegen `authjs.session-token`. Wer den lokalen Namen auf der ausgerollten
+> Instanz setzt, landet stumm im abgemeldeten Zustand.
+
+---
+
 ## Schritt 5 — Cron-Dienst
 
 Abgelaufene Briefzuweisungen müssen freigegeben werden, sonst bleibt ein Brief
