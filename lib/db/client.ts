@@ -28,6 +28,26 @@ export type UserContext = {
 let appPool: Pool | undefined;
 let servicePool: Pool | undefined;
 
+/**
+ * Grenzen fuer jede Verbindung.
+ *
+ * Ohne connectionTimeoutMillis wartet pg unbegrenzt, wenn der Datenbankhost
+ * nicht antwortet - kein Fehler, kein Abbruch, nur Stillstand. Das ist der
+ * unangenehmste aller Fehlerfaelle: nichts sagt einem, dass etwas nicht
+ * stimmt.
+ *
+ * Zehn Sekunden sind grosszuegig fuer eine Verbindung innerhalb desselben
+ * Netzes und kurz genug, dass ein unerreichbarer Host als Fehler auffaellt
+ * statt als Haenger.
+ */
+const VERBINDUNGSGRENZEN = {
+  connectionTimeoutMillis: 10_000,
+  // Eine Abfrage, die laenger als eine halbe Minute braucht, ist keine
+  // Abfrage mehr, sondern ein Problem.
+  statement_timeout: 30_000,
+  idleTimeoutMillis: 30_000,
+} as const;
+
 function requireEnv(name: string, hint: string): string {
   const value = process.env[name];
 
@@ -45,6 +65,7 @@ function getAppPool(): Pool {
         "DATABASE_URL_APP",
         "Die Anwendung verbindet sich als anomail_app, nicht als Eigentuemer.",
       ),
+      ...VERBINDUNGSGRENZEN,
     });
   }
 
@@ -58,6 +79,7 @@ function getServicePool(): Pool {
         "DATABASE_URL",
         "Die Dienstverbindung laeuft als Eigentuemer und wird fuer Anmeldung und Wartung gebraucht.",
       ),
+      ...VERBINDUNGSGRENZEN,
     });
   }
 

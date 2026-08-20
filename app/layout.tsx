@@ -92,6 +92,16 @@ export const viewport: Viewport = {
 };
 
 /**
+ * Kein Vorabrendern beim Bauen.
+ *
+ * Das Layout ruft auth() auf, also ist ohnehin jede Route dynamisch. Es
+ * ausdruecklich hinzuschreiben nimmt dem Bau den Versuch, Seiten vorab zu
+ * erzeugen - und damit jeden Grund, waehrend des Bauens eine Datenbank
+ * anzusprechen, die vom Bau-Schritt aus gar nicht erreichbar ist.
+ */
+export const dynamic = "force-dynamic";
+
+/**
  * Wurzel-Layout.
  *
  * Der Aufruf von auth() macht jede Route dynamisch - auch die Rechtsseiten,
