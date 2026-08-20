@@ -51,6 +51,9 @@ export default defineConfig({
         command: "npm run build && npm run start",
         url: BASIS_URL,
         reuseExistingServer: !process.env.CI,
-        timeout: 300_000,
+        // Bauen und Starten auf einem kalten CI-Laeufer, inklusive der
+        // Schriften, die next/font beim Bauen herunterlaedt. 300 Sekunden
+        // waren dafuer knapp bemessen.
+        timeout: 600_000,
       },
 });

@@ -94,6 +94,55 @@ try {
     );
   }
 
+  /*
+   * Rollen aus ADMIN_EMAILS.
+   *
+   * Das Protokoll unter /moderation/audit sehen nur Admins, und es gibt
+   * bewusst keinen Weg ueber die Oberflaeche, sich selbst zum Admin zu machen -
+   * wer das koennte, koennte fremde Briefe im Klartext lesen.
+   *
+   * Bleibt: die Rolle beim Ausrollen setzen. Kommaliste, damit spaeter eine
+   * zweite Person dazukommen kann, ohne dass jemand SQL tippen muss.
+   *
+   * Bewusst nur heraufstufen und nie herabstufen: waere das Gegenteil der
+   * Fall, wuerde ein vergessener Eintrag in der Variablen beim naechsten
+   * Ausrollen stillschweigend jemandem die Rechte nehmen.
+   */
+  const adminListe = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((eintrag) => eintrag.trim().toLowerCase())
+    .filter((eintrag) => eintrag.length > 0);
+
+  if (adminListe.length > 0) {
+    const { rows } = await client.query<{ email: string }>(
+      `UPDATE users
+          SET role = 'admin'
+        WHERE lower(email) = ANY($1::text[])
+          AND role <> 'admin'
+      RETURNING email`,
+      [adminListe],
+    );
+
+    const { rows: vorhanden } = await client.query<{ anzahl: string }>(
+      `SELECT count(*)::text AS anzahl FROM users WHERE role = 'admin'`,
+    );
+
+    console.log(
+      `     Admins: ${vorhanden[0].anzahl} insgesamt` +
+        (rows.length > 0 ? `, ${rows.length} neu heraufgestuft` : ""),
+    );
+
+    const unbekannt = adminListe.filter(
+      (email) => !rows.some((zeile) => zeile.email.toLowerCase() === email),
+    );
+
+    if (Number(vorhanden[0].anzahl) === 0 && unbekannt.length > 0) {
+      console.warn(
+        `     Hinweis: kein Konto zu ${unbekannt.join(", ")}. Die Rolle wird gesetzt, sobald sich die Adresse einmal angemeldet hat.`,
+      );
+    }
+  }
+
   if (process.env.DEMO_ZUGANG === "true") {
     console.log("5/5  Vorfuehr-Zugang (DEMO_ZUGANG=true)");
 
