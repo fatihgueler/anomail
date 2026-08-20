@@ -94,6 +94,38 @@ try {
     );
   }
 
+  if (process.env.DEMO_ZUGANG === "true") {
+    console.log("5/5  Vorfuehr-Zugang (DEMO_ZUGANG=true)");
+
+    const geheimnis = process.env.DEMO_ZUGANG_TOKEN;
+
+    if (!geheimnis) {
+      throw new Error(
+        "DEMO_ZUGANG=true, aber DEMO_ZUGANG_TOKEN fehlt. Ohne Geheimnis kein Zugang.",
+      );
+    }
+
+    const { richteDemoZugangEin } = await import("./demo-zugang.mts");
+    const sitzungen = await richteDemoZugangEin(client, geheimnis);
+
+    console.log("");
+    console.log("     ACHTUNG: Diese Instanz hat feste Vorfuehr-Sitzungen.");
+    console.log("     Wer das Cookie kennt, ist ohne Anmeldung drin.");
+    console.log("     Zum Abschalten DEMO_ZUGANG entfernen und neu ausrollen.");
+    console.log("");
+
+    for (const sitzung of sitzungen) {
+      console.log(`     ${sitzung.beschreibung}: ${sitzung.anomailId}`);
+    }
+  } else {
+    const { raeumeDemoZugangAuf } = await import("./demo-zugang.mts");
+    const entfernt = await raeumeDemoZugangAuf(client);
+
+    if (entfernt > 0) {
+      console.log(`5/5  Vorfuehr-Zugang abgeschaltet, ${entfernt} Sitzungen entfernt.`);
+    }
+  }
+
   console.log("\nDatenbank ist betriebsbereit.");
 } finally {
   await client.end();
