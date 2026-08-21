@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { CrisisNotice } from "@/components/legal/crisis-notice";
 import { Icon } from "@/components/ui/icon";
+import { NoticeBanner } from "@/components/ui/notice-banner";
 import { placeholderText, type PlaceholderId } from "@/content/legal/platzhalter";
 import { cn } from "@/lib/utils";
 
@@ -73,6 +74,37 @@ export function LegalParagraph({ children }: { children: React.ReactNode }) {
   return <p className="max-w-prose text-body">{children}</p>;
 }
 
+/**
+ * Vorläufigkeits-Hinweis auf jeder Rechtsseite.
+ *
+ * Die Texte auf diesen Seiten beschreiben zutreffend, was die Anwendung tut —
+ * anwaltlich geprüft sind sie nicht. Das ist bewusst so und ausdrücklich
+ * gewünscht, damit die Vorführinstanz keine sichtbaren Lücken zeigt.
+ *
+ * Der Hinweis steht deshalb hier und nicht in einem Kommentar im Code: Der
+ * gefährlichste Ausgang wäre ein Rechtstext, der fertig aussieht und deshalb
+ * ungeprüft in den Betrieb geht. Wer die Seite ansieht, muss sofort erkennen,
+ * woran er ist.
+ *
+ * Beim Übergang in den echten Betrieb: erst die Texte prüfen lassen, dann
+ * diesen Baustein entfernen. Nicht umgekehrt.
+ */
+function VorlaeufigHinweis() {
+  return (
+    <div className="max-w-prose">
+      <NoticeBanner tone="warnung" title="Vorläufige Fassung, nicht anwaltlich geprüft">
+        <p>
+          Diese Texte beschreiben zutreffend, wie Anomail arbeitet. Sie sind
+          aber keine anwaltlich geprüften Rechtstexte und ersetzen eine solche
+          Prüfung nicht. Angaben, die nur der Betreiber kennt — etwa Anschrift,
+          Auftragsverarbeiter oder zuständige Aufsichtsbehörde — stehen
+          weiterhin als Platzhalter da.
+        </p>
+      </NoticeBanner>
+    </div>
+  );
+}
+
 /** Rahmen jeder Rechtsseite. Genau ein h1, danach lückenlos h2 und h3. */
 export function LegalPage({
   title,
@@ -92,6 +124,8 @@ export function LegalPage({
         <h1 className="text-display">{title}</h1>
         {intro}
       </div>
+
+      <VorlaeufigHinweis />
 
       {children}
 

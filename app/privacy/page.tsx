@@ -85,9 +85,18 @@ export default function PrivacyPage() {
                     Karte 1 und Karte 9 beschrieben im Altbestand eine
                     Geräte-Kennung als Sicherheitsmaßnahme. Sie war ein
                     localStorage-Wert und im Neubau gibt es nichts dergleichen.
-                    Jede Aussage darüber ist gestrichen.
+
+                    Der Platzhalter dazu erscheint nur noch, solange die Karte
+                    gar keinen Text hat. Die vorläufige Fassung sagt in Karte 9
+                    ausdrücklich, dass keine Geräte-Kennung ausgelesen wird —
+                    damit ist die Anforderung erfüllt, und ein zusätzlicher
+                    Warnkasten unter einem Text, der sie bereits erfüllt, wäre
+                    irreführend.
+
+                    Dass der Text noch ungeprüft ist, sagt der Hinweis am Kopf
+                    jeder Rechtsseite. Er verschwindet erst mit der Prüfung.
                   */}
-                  {ohneGeraetekennung.has(index) ? (
+                  {ohneGeraetekennung.has(index) && !karte.text ? (
                     <Placeholder id="privacyTechnischeSicherheitsdaten" />
                   ) : null}
                 </CardContent>

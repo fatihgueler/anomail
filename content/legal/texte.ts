@@ -16,17 +16,58 @@ export type LegalCard = {
   text: string | null;
 };
 
-/** Datenschutz-Kurzfassung, /privacy. Die neun Karten. */
+/**
+ * Datenschutz-Kurzfassung, /privacy. Die neun Karten.
+ *
+ * TODO(anwalt): Vorläufige Fassung, nicht anwaltlich geprüft.
+ *
+ * Diese Texte beschreiben, was die Anwendung tatsächlich tut — nachgesehen im
+ * Datenmodell und in den Abläufen, nicht angenommen. Was sie NICHT tun: eine
+ * Rechtsgrundlage benennen, eine Speicherfrist zusagen oder einen
+ * Auftragsverarbeiter nennen. Solche Angaben stehen weiterhin als Platzhalter
+ * in der Langfassung, weil sie eine rechtliche Bewertung oder eine
+ * Entscheidung des Betreibers voraussetzen.
+ *
+ * Beim Übergang in den echten Betrieb prüfen lassen und danach den
+ * Vorläufigkeits-Hinweis in components/legal/legal-shell.tsx entfernen.
+ */
 export const PRIVACY_CARDS: LegalCard[] = [
-  { titel: "Welche Daten die App benötigt", text: null },
-  { titel: "Warum eine dauerhafte Nutzeridentität nötig ist", text: null },
-  { titel: "Warum Briefe und Antworten gespeichert werden", text: null },
-  { titel: "Wie Anomail-ID und interne Identität zusammenhängen", text: null },
-  { titel: "Deine Anomail-ID ist anonym", text: null },
-  { titel: "Wie Meldungen und Moderation funktionieren", text: null },
-  { titel: "Welche Daten du löschen kannst", text: null },
-  { titel: "Wie du dein Konto löschst", text: null },
-  { titel: "Technische Sicherheitsdaten", text: null },
+  {
+    titel: "Welche Daten die App benötigt",
+    text: "Zum Anmelden brauchen wir deine E-Mail-Adresse. Mehr nicht — kein Name, kein Geburtsdatum, keine Telefonnummer, kein Passwort.\n\nDazu kommt, was du selbst schreibst: deine Briefe, deine Antworten und die Themen, unter denen du sie einordnest.\n\nWir binden keine Werbenetzwerke ein, messen kein Nutzungsverhalten und setzen kein Cookie außer dem, das dich angemeldet hält. Deshalb gibt es hier auch kein Einwilligungsbanner.",
+  },
+  {
+    titel: "Warum eine dauerhafte Nutzeridentität nötig ist",
+    text: "Damit du deine Briefe wiederfindest, muss der Dienst dich über mehrere Besuche hinweg wiedererkennen. Sonst wäre jede Antwort nach dem Schließen des Browsers verloren.\n\nDie Wiedererkennung hängt an deinem Konto, nicht an deinem Gerät. Du kannst dich auf jedem Gerät anmelden und findest dasselbe vor.\n\nEs geht dabei nicht darum, dich zu beobachten. Es geht darum, dass ein Briefwechsel über Tage laufen kann.",
+  },
+  {
+    titel: "Warum Briefe und Antworten gespeichert werden",
+    text: "Ein Brief wartet, bis jemand ihn liest. Eine Antwort kommt Stunden oder Tage später. Beides setzt voraus, dass der Text so lange bestehen bleibt.\n\nGespeichert wird auf unseren Servern, nicht auf deinem Gerät. Wer an einem Briefwechsel beteiligt ist, kann ihn dort lesen — sonst niemand. Diese Grenze ist in der Datenbank selbst gezogen und nicht nur in der Oberfläche.\n\nWas du löschst, ist weg. Was du stehen lässt, bleibt, bis du es löschst.",
+  },
+  {
+    titel: "Wie Anomail-ID und interne Identität zusammenhängen",
+    text: "Intern führen wir ein Konto zu deiner E-Mail-Adresse. Nach außen bist du ausschließlich deine Anomail-ID.\n\nBeides hängt zusammen, aber nur in eine Richtung und nur bei uns: Aus deiner Anomail-ID lässt sich deine Adresse nicht errechnen. Die Kennung wird bei der ersten Anmeldung zufällig gezogen und hat mit deiner Adresse nichts zu tun.\n\nDeine E-Mail-Adresse bekommt kein anderer Nutzer zu sehen. Auch die Moderation nicht.",
+  },
+  {
+    titel: "Deine Anomail-ID ist anonym",
+    text: "AN-4KTP-9WXR — mehr sieht die Person am anderen Ende nicht.\n\nDie Kennung wird einmal vergeben und ändert sich nie. Löschst du dein Konto, wird sie zurückgezogen und nie wieder an jemand anderen vergeben. Niemand kann später deine Kennung bekommen und für dich gehalten werden.\n\nAnonym heißt hier: gegenüber anderen Nutzern. Uns gegenüber bist du deine E-Mail-Adresse, sonst könnten wir dich nicht anmelden.",
+  },
+  {
+    titel: "Wie Meldungen und Moderation funktionieren",
+    text: "Jeden Brief und jede Nachricht kannst du melden. Die Meldung geht an die Moderation, die sich den gemeldeten Inhalt im Klartext ansieht — das ist die einzige Stelle der Anwendung, an der das geschieht.\n\nDie Moderation sieht keine E-Mail-Adressen und kann nicht frei in fremden Briefen lesen. Sie sieht nur, was gemeldet oder von der automatischen Inhaltsprüfung zurückgehalten wurde. Jeder Zugriff wird protokolliert, und dieses Protokoll lässt sich nachträglich nicht ändern.\n\nDu bekommst eine Rückmeldung, sobald entschieden wurde, und kannst gegen die Entscheidung Widerspruch einlegen.",
+  },
+  {
+    titel: "Welche Daten du löschen kannst",
+    text: "Einen wartenden Brief kannst du zurückziehen, solange er niemandem zugeteilt ist. Danach ist er weg.\n\nEine einzelne Nachricht kannst du löschen. Der Gegenseite bleibt sichtbar, dass dort etwas stand, aber nicht mehr, was.\n\nEinen ganzen Briefwechsel kannst du für dich ausblenden. Die andere Person behält ihre Seite unverändert — was sie geschrieben hat, gehört ihr.\n\nEine Kopie all deiner Daten kannst du dir jederzeit unter Einstellungen herunterladen. Dafür musst du uns nicht schreiben.",
+  },
+  {
+    titel: "Wie du dein Konto löschst",
+    text: "Unter \"Konto löschen\" tippst du deine Anomail-ID ab und bestätigst. Es gibt keine Wartezeit und keine Rückfrage per E-Mail.\n\nGelöscht werden deine E-Mail-Adresse, deine Anmeldedaten und deine Einstellungen. Deine Nachrichten werden geleert, deine Kennung zurückgezogen.\n\nWas bleibt: Ein Briefwechsel verschwindet für die andere Person nicht vollständig. Sie sieht weiterhin, dass ein Austausch stattgefunden hat — aber keine Inhalte von dir mehr. Sonst könnte jemand einen Briefwechsel nachträglich aus der Erinnerung einer anderen Person entfernen. Ebenfalls bestehen bleiben Einträge zu Meldungen und Moderationsentscheidungen, soweit wir sie nachweisen müssen.",
+  },
+  {
+    titel: "Technische Sicherheitsdaten",
+    text: "Damit sich niemand mit fremden Adressen hunderte Anmeldelinks schicken lassen kann, begrenzen wir die Zahl der Anfragen. Dafür merken wir uns kurzzeitig einen unumkehrbaren Prüfwert aus deiner E-Mail-Adresse und deiner IP-Adresse — nicht die Angaben selbst.\n\nDeine Sitzung hängt an einer zufälligen Kennung in unserer Datenbank, nicht an einem Merkmal deines Geräts. Wir lesen keine Geräte-Kennung aus, setzen keinen Fingerabdruck und erkennen dich nicht an deinem Browser wieder.\n\nWie lange der Anbieter unserer Server technische Protokolle führt, steht in der ausführlichen Fassung.",
+  },
 ];
 
 /**
@@ -41,10 +82,54 @@ export const PRIVACY_CARDS_OHNE_GERAETEKENNUNG = [0, 8] as const;
 export const TERMS_INTRO =
   "Diese Regeln schützen dich und alle anderen. Bitte lies sie in Ruhe.";
 
-export const TERMS_RULES: LegalCard[] = Array.from({ length: 9 }, (_, index) => ({
-  titel: `Regel ${index + 1}`,
-  text: null,
-}));
+/**
+ * TODO(anwalt): Vorläufige Fassung, nicht anwaltlich geprüft.
+ *
+ * Verhaltensregeln, keine Vertragsklauseln. Die vertragliche Seite steht in
+ * /agb und bleibt dort, wo sie eine rechtliche Bewertung braucht, Platzhalter.
+ *
+ * Die Regeln sind so formuliert, wie der Dienst spricht: Du-Form, ruhig, ohne
+ * Drohgebärde. Jede sagt, was gilt, und warum — eine Regel ohne Grund liest
+ * sich wie Willkür und wird entsprechend behandelt.
+ */
+export const TERMS_RULES: LegalCard[] = [
+  {
+    titel: "Schreib von dir",
+    text: "Anomail ist für das da, was dich selbst belastet. Schreib in der ersten Person, über deine Lage und dein Erleben.\n\nDas ist keine Formvorschrift. Ein Brief, der von jemand anderem handelt, gibt der antwortenden Person nichts, worauf sie eingehen könnte — und der Person, über die geschrieben wird, keine Gelegenheit zu widersprechen.",
+  },
+  {
+    titel: "Keine Namen, keine Adressen, keine Nummern",
+    text: "Nenne weder dich noch andere beim Namen. Keine Anschriften, keine Telefonnummern, keine Arbeitgeber, keine Profile in anderen Diensten.\n\nDas gilt auch für Menschen, über die du schreibst — sie haben nicht zugestimmt, hier vorzukommen.\n\nWenn du merkst, dass du zu genau geworden bist: Der Brief lässt sich zurückziehen, solange ihn noch niemand bekommen hat.",
+  },
+  {
+    titel: "Antworte, oder gib den Brief zurück",
+    text: "Wenn du einen Brief zum Lesen bekommst, ist er für zehn Minuten für dich reserviert. Antworte in dieser Zeit oder gib ihn zurück, damit jemand anderes es tun kann.\n\nZurückgeben ist kein Versagen. Es gibt Briefe, zu denen einem nichts einfällt, und ein ehrliches Nichts ist besser als eine Antwort, die man nicht meint.",
+  },
+  {
+    titel: "Rate nichts, was du nicht beurteilen kannst",
+    text: "Du bist keine Fachkraft, und die Person am anderen Ende erwartet auch keine. Schreib, was du ehrlich sagen kannst — aus eigener Erfahrung, aus Anteilnahme, aus dem, was dir dazu einfällt.\n\nKeine Diagnosen. Keine Empfehlungen zu Medikamenten. Keine Ratschläge, die eine Behandlung ersetzen sollen.\n\nWenn dir ein Brief zeigt, dass jemand fachliche Hilfe braucht, darfst du das sagen und auf die Telefonseelsorge hinweisen.",
+  },
+  {
+    titel: "Kein Hass, keine Herabwürdigung",
+    text: "Beleidigungen, Bedrohungen und Herabwürdigung wegen Herkunft, Religion, Geschlecht, sexueller Orientierung, Behinderung oder Alter haben hier keinen Platz.\n\nWer sich hier öffnet, ist angreifbar. Das auszunutzen ist der schwerste Verstoß gegen den Sinn dieses Dienstes und führt zur Sperre des Kontos.",
+  },
+  {
+    titel: "Nichts Sexuelles, kein Anmachen",
+    text: "Sexuelle Inhalte gehören nicht hierher, und schon gar nicht ungefragt. Anomail ist kein Ort zum Anbahnen von Kontakten.\n\nVersuche, ein Gespräch in diese Richtung zu lenken, kannst du melden. Der Kontakt lässt sich mit einem Klick beenden.",
+  },
+  {
+    titel: "Keine Werbung, keine Weiterleitung",
+    text: "Keine Angebote, keine Links auf eigene Seiten, keine Aufforderung, woanders weiterzuschreiben.\n\nEin Brief ist keine Gelegenheit. Wer hier schreibt, sucht ein Gegenüber und keinen Empfänger für etwas anderes.",
+  },
+  {
+    titel: "Meld es, wenn etwas nicht stimmt",
+    text: "Jeden Brief und jede Nachricht kannst du melden. Du brauchst dafür keinen Beweis und musst dir nicht sicher sein — die Moderation sieht es sich an.\n\nDu kannst eine Kennung außerdem blockieren. Die andere Person erfährt davon nichts.\n\nMeldungen ins Blaue hinein helfen niemandem. Wer den Meldeweg dauerhaft missbraucht, um andere loszuwerden, verstößt selbst gegen diese Regeln.",
+  },
+  {
+    titel: "Bei Gefahr: Notruf, nicht Anomail",
+    text: "Wenn du daran denkst, dir das Leben zu nehmen, oder wenn jemand in unmittelbarer Gefahr ist, warte nicht auf eine Antwort hier.\n\nNotruf 112. Telefonseelsorge 0800 111 0 111 — kostenlos, anonym, rund um die Uhr.\n\nAnomail ist kein Krisendienst. Eine Antwort kann Tage dauern oder ausbleiben. Darauf darfst du dich in einer Notlage nicht verlassen.",
+  },
+];
 
 /**
  * Hilfe, /help. Die sieben bestehenden Karten.
@@ -103,5 +188,13 @@ export const HELP_CARD_WIDERSPRUCH: LegalCard = {
   ].join("\n\n"),
 };
 
-/** Kontakt, /contact. */
-export const CONTACT_TEXT: string | null = null;
+/**
+ * Kontakt, /contact.
+ *
+ * TODO(anwalt): Vorläufige Fassung, nicht anwaltlich geprüft.
+ *
+ * Die Adresse selbst steht bewusst nicht hier, sondern kommt aus
+ * content/legal/betreiber.ts und erscheint als Platzhalter, solange sie fehlt.
+ */
+export const CONTACT_TEXT: string =
+  "Für Fragen zum Dienst, zu einer Moderationsentscheidung oder zu deinen Daten erreichst du uns per E-Mail. Die Adresse steht im Impressum.\n\nSchreib bitte nicht deinen Brief an diese Adresse — sie ist kein zweiter Weg, gehört zu werden, und wir können dort nicht die Rolle übernehmen, die eigentlich die Person am anderen Ende deines Briefs hat.\n\nWenn du dich auf eine Meldung oder eine Sperre beziehst, nenne uns deine Anomail-ID. Ohne sie können wir den Vorgang nicht zuordnen — deine E-Mail-Adresse allein hilft uns dabei nicht weiter, weil die Moderation sie bewusst nicht zu sehen bekommt.\n\nIn einer akuten Krise wende dich bitte nicht an uns, sondern an die Telefonseelsorge unter 0800 111 0 111 oder an den Notruf 112. Wir lesen E-Mails nicht rund um die Uhr.";
